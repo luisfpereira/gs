@@ -1,7 +1,7 @@
 import pytest
 from geomstats.test.data import TestData
 
-import gs.backend as gs
+import gs
 
 
 class NumpyRaisesTestData(TestData):

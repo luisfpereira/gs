@@ -4,7 +4,7 @@ from geomstats.geometry.spd_matrices import SPDMatrices
 from geomstats.geometry.symmetric_matrices import SymmetricMatrices
 from geomstats.test.data import TestData
 
-import gs.backend as gs
+import gs
 
 rand = gs.random.rand
 
