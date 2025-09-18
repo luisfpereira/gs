@@ -20,7 +20,6 @@ def get_backend_name():
 
 BACKEND_NAME = get_backend_name()
 
-# --- Merge attributes from both backends ---
 BACKEND_ATTRIBUTES = {
     "": [
         # Types
@@ -169,7 +168,6 @@ BACKEND_ATTRIBUTES = {
         "zeros",
         "zeros_like",
         "trapezoid",
-        # --- New backend attributes ---
         "geomspace",
         "scatter_sum_1d",
         "square",
@@ -254,16 +252,13 @@ class BackendImporter:
         try:
             return importlib.import_module(f"gs.{backend_name}")
         except ModuleNotFoundError:
-            try:
-                return importlib.import_module(f"gs._backend.{backend_name}")
-            except ModuleNotFoundError:
-                raise RuntimeError(f"Unknown backend '{backend_name}'")
+            raise RuntimeError(f"Unknown backend '{backend_name}'")
 
     def _create_backend_module(self, backend_name):
         backend = self._import_backend(backend_name)
 
         new_module = types.ModuleType(self._path)
-        new_module.__file__ = getattr(backend, "__file__", None)
+        new_module.__file__ = backend.__file__
 
         for module_name, attributes in BACKEND_ATTRIBUTES.items():
             if module_name:
@@ -274,7 +269,7 @@ class BackendImporter:
                         f"Backend '{backend_name}' exposes no '{module_name}' module"
                     ) from None
                 new_submodule = types.ModuleType(f"{self._path}.{module_name}")
-                new_submodule.__file__ = getattr(submodule, "__file__", None)
+                new_submodule.__file__ = submodule.__file__
                 setattr(new_module, module_name, new_submodule)
             else:
                 submodule = backend
@@ -318,9 +313,7 @@ class BackendImporter:
         module.__loader__ = self
         sys.modules[fullname] = module
 
-        # Only set dtype if available
-        if hasattr(module, "set_default_dtype"):
-            module.set_default_dtype("float64")
+        module.set_default_dtype("float64")
 
         logging.debug(f"geomstats is using {BACKEND_NAME} backend")
         return module

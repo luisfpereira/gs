@@ -2,11 +2,8 @@
 
 from collections.abc import Iterable as _Iterable
 
-import gs.backend as gs
-
 import numpy as _np
 import torch as _torch
-
 from torch import (
     arange,
     argmin,
@@ -40,6 +37,7 @@ from torch import (
     reshape,
     scatter_add,
     searchsorted,
+    square,
     stack,
     trapezoid,
     uint8,
@@ -132,7 +130,7 @@ def scatter_sum_1d(index, src, size=None):
 
 
 def geomspace(start, stop, num, *, dtype=None):
-    return gs.exp(gs.linspace(gs.log(start), gs.log(stop), num))
+    return exp(linspace(log(start), log(stop), num))
 
 
 def argsort(a, axis=-1):

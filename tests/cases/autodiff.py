@@ -2,7 +2,7 @@ import pytest
 from geomstats.test.test_case import TestCase
 from geomstats.test.vectorization import generate_vectorization_data
 
-import gs
+import gs.backend as gs
 from gs._exceptions import AutodiffNotImplementedError
 
 

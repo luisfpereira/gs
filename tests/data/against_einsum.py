@@ -1,6 +1,6 @@
 from geomstats.test.data import TestData
 
-import gs
+import gs.backend as gs
 
 rand = gs.random.rand
 

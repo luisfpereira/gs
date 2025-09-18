@@ -1,7 +1,7 @@
 from geomstats.geometry.matrices import Matrices
 from geomstats.test.data import TestData
 
-import gs
+import gs.backend as gs
 
 rand = gs.random.rand
 
