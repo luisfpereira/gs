@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 authors = [
     { name = "Geometric Intelligence Lab @ UC Santa Barbara" },
     { name = "Luís F. Pereira", email = "luisfpereira@ucsb.edu" },
+    { name = "Giulio Viganò", email = "g.vigano36@campus.unimib.it" },
 ]
 name = "gs"
 dynamic = ["version"]
@@ -19,6 +20,20 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 requires-python = ">= 3.9"
+dependencies = ["numpy", "scipy"]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "coverage",
+    "geomstats",
+    "nbformat",
+    "nbconvert",
+]
+ci = ["pytest-github-actions-annotate-failures"]
+autograd = ["autograd >= 1.3"]
+pytorch = ["torch >= 1.9.1"]
 
 [project.urls]
 repository = "http://github.com/luisfpereira/gs"
@@ -33,12 +48,10 @@ include = ["gs", "gs.*"]
 markers = [
     "smoke: simple and basic numerical tests.",
     "random: tests that use randomized data.",
-    "validation: not smoke, neither random.",
     "ignore: deselect tests.",
     "vec: vectorization tests.",
     "shape: array shape tests.",
     "type: checks output types.",
-    "mathprop: mathematical properties tests.",
     "slow: for slow tests.",
     "redundant: redundant test.",
 ]
@@ -57,5 +70,7 @@ known-first-party = ["gs"]
 convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
-"*/__init__.py" = ["F401"]
+"*/__init__.py" = ["F401", "D104"]
+"gs/**/*" = ["D", "F401"]
 "tests/*" = ["D"]
+"tests/conftest.py" = ["F401"]

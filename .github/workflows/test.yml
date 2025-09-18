@@ -1,0 +1,59 @@
+name: "Testing"
+
+on:
+  push:
+    branches: [main, github-actions-test]
+    paths-ignore:
+      - "docs/**"
+      - "README.rst"
+      - "LICENSE.md"
+      - ".gitignore"
+
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "README.rst"
+      - "LICENSE.md"
+      - ".gitignore"
+
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.13]
+        geomstats-backend: ["autograd", "numpy", "pytorch"]
+      fail-fast: false
+    env:
+      GEOMSTATS_BACKEND: ${{matrix.geomstats-backend}}
+      JUPYTER_PLATFORM_DIRS: 1
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build using Python ${{matrix.python-version}} and Backend ${{matrix.geomstats-backend}}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{matrix.geomstats-backend}}-${{matrix.os}}-${{matrix.python-version}}-${{matrix.test-folder}}-${{ hashFiles('pyproject.toml') }}
+
+      - name: install dependencies [pip]
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install -e .[test,ci,${{ matrix.geomstats-backend }}]
+
+      - name: unit testing for backend [pytest]
+        run: |
+          pytest --cov-report term --cov=gs ${{matrix.test-folder}}
+
+      - name: uploading code coverage [codecov]
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.geomstats-backend }}
+          fail_ci_if_error: true
