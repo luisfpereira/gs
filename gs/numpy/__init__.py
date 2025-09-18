@@ -1,6 +1,8 @@
 """Numpy based computation backend."""
 
 import numpy as _np
+import scipy as _scipy
+import torch as _torch
 from numpy import (
     all,
     allclose,
@@ -29,6 +31,7 @@ from numpy import (
     flip,
     float32,
     float64,
+    geomspace,
     greater,
     hsplit,
     hstack,
@@ -56,6 +59,7 @@ from numpy import (
     shape,
     sort,
     split,
+    square,
     stack,
     std,
     sum,
@@ -135,6 +139,7 @@ from . import (
     autodiff,  # NOQA
     linalg,  # NOQA
     random,  # NOQA
+    sparse,  # NOQA
 )
 from ._common import (
     _box_binary_scalar,
@@ -172,3 +177,32 @@ def has_autodiff():
     has_autodiff : bool
     """
     return False
+
+
+def scatter_sum_1d(index, src, size=None):
+    shape = None if size is None else (size, 1)
+
+    dummy_indices = _np.zeros_like(index)
+
+    return _np.array(
+        _scipy.sparse.coo_matrix(
+            (src, (index, dummy_indices)),
+            shape=shape,
+        ).todense()
+    ).flatten()
+
+
+def to_device(a, device):
+    return a
+
+
+def argsort(a, axis=-1):
+    return _np.argsort(a, axis=axis)
+
+
+def to_torch(a):
+    return _torch.tensor(a)
+
+
+def diag(array):
+    return _np.diag(array)

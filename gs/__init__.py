@@ -20,7 +20,7 @@ def get_backend_name():
 
 BACKEND_NAME = get_backend_name()
 
-
+# --- Merge attributes from both backends ---
 BACKEND_ATTRIBUTES = {
     "": [
         # Types
@@ -169,6 +169,14 @@ BACKEND_ATTRIBUTES = {
         "zeros",
         "zeros_like",
         "trapezoid",
+        # --- New backend attributes ---
+        "geomspace",
+        "scatter_sum_1d",
+        "square",
+        "argsort",
+        "to_torch",
+        "diag",
+        "to_device",
     ],
     "autodiff": [
         "custom_gradient",
@@ -207,13 +215,29 @@ BACKEND_ATTRIBUTES = {
         "choice",
         "normal",
         "multivariate_normal",
-        # TODO (nkoep): Remove 'rand' and replace it by 'uniform'. Much like
-        #              'randn' is a convenience wrapper (which we don't use)
-        #              for 'normal', 'rand' only wraps 'uniform'.
         "rand",
         "randint",
         "seed",
         "uniform",
+    ],
+    "sparse": [
+        "to_dense",
+        "from_scipy_coo",
+        "from_scipy_csc",
+        "from_scipy_csr",
+        "from_scipy_dia",
+        "to_scipy_csc",
+        "to_scipy_dia",
+        "csr_matrix",
+        "csc_matrix",
+        "coo_matrix",
+        "dia_matrix",
+        "to_torch_csc",
+        "to_torch_dia",
+        "to_torch_coo",
+        "to_coo",
+        "to_csc",
+        "to_csr",
     ],
 }
 
@@ -230,13 +254,16 @@ class BackendImporter:
         try:
             return importlib.import_module(f"gs.{backend_name}")
         except ModuleNotFoundError:
-            raise RuntimeError(f"Unknown backend '{backend_name}'")
+            try:
+                return importlib.import_module(f"gs._backend.{backend_name}")
+            except ModuleNotFoundError:
+                raise RuntimeError(f"Unknown backend '{backend_name}'")
 
     def _create_backend_module(self, backend_name):
         backend = self._import_backend(backend_name)
 
         new_module = types.ModuleType(self._path)
-        new_module.__file__ = backend.__file__
+        new_module.__file__ = getattr(backend, "__file__", None)
 
         for module_name, attributes in BACKEND_ATTRIBUTES.items():
             if module_name:
@@ -247,7 +274,7 @@ class BackendImporter:
                         f"Backend '{backend_name}' exposes no '{module_name}' module"
                     ) from None
                 new_submodule = types.ModuleType(f"{self._path}.{module_name}")
-                new_submodule.__file__ = submodule.__file__
+                new_submodule.__file__ = getattr(submodule, "__file__", None)
                 setattr(new_module, module_name, new_submodule)
             else:
                 submodule = backend
@@ -258,7 +285,6 @@ class BackendImporter:
                     if module_name == "" and not hasattr(submodule, attribute_name):
                         submodule_ = common
                     attribute = getattr(submodule_, attribute_name)
-
                 except AttributeError:
                     if module_name:
                         error = (
@@ -270,7 +296,6 @@ class BackendImporter:
                             f"Backend '{backend_name}' has no "
                             f"attribute '{attribute_name}'"
                         )
-
                     raise RuntimeError(error) from None
                 else:
                     setattr(new_submodule, attribute_name, attribute)
@@ -293,7 +318,9 @@ class BackendImporter:
         module.__loader__ = self
         sys.modules[fullname] = module
 
-        module.set_default_dtype("float64")
+        # Only set dtype if available
+        if hasattr(module, "set_default_dtype"):
+            module.set_default_dtype("float64")
 
         logging.debug(f"geomstats is using {BACKEND_NAME} backend")
         return module

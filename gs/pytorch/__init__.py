@@ -2,8 +2,11 @@
 
 from collections.abc import Iterable as _Iterable
 
+import gs.backend as gs
+
 import numpy as _np
 import torch as _torch
+
 from torch import (
     arange,
     argmin,
@@ -54,6 +57,7 @@ from . import (
     autodiff,  # NOQA
     linalg,  # NOQA
     random,  # NOQA
+    sparse,  # NOQA
 )
 from ._common import array, cast, from_numpy
 from ._dtype import (
@@ -117,6 +121,39 @@ def has_autodiff():
     has_autodiff : bool
     """
     return True
+
+
+def scatter_sum_1d(index, src, size=None):
+    if size is None:
+        size = index.max() + 1
+
+    array = _torch.zeros(size, dtype=src.dtype)
+    return _torch.scatter_add(array, -1, index, src)
+
+
+def geomspace(start, stop, num, *, dtype=None):
+    return gs.exp(gs.linspace(gs.log(start), gs.log(stop), num))
+
+
+def argsort(a, axis=-1):
+    return _torch.argsort(a, dim=axis)
+
+
+def to_torch(a):
+    return a
+
+
+def to_device(a, device):
+    return a.to(device)
+
+
+def diag(array):
+    if array.ndim == 1:
+        return _torch.diag(array)
+    elif array.ndim == 2:
+        return _torch.diag(_torch.diagonal(array))
+    else:
+        raise ValueError("Input must be a 1D or 2D tensor.")
 
 
 def matmul(x, y, out=None):
