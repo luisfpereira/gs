@@ -1,6 +1,7 @@
 """Numpy based computation backend."""
 
 import numpy as _np
+import scipy as _scipy
 from numpy import (
     all,
     allclose,
@@ -29,6 +30,7 @@ from numpy import (
     flip,
     float32,
     float64,
+    geomspace,
     greater,
     hsplit,
     hstack,
@@ -56,6 +58,7 @@ from numpy import (
     shape,
     sort,
     split,
+    square,
     stack,
     std,
     sum,
@@ -130,11 +133,17 @@ from .._shared_numpy import (
     triu_to_vec,
     vec_to_diag,
     vectorize,
+    scatter_sum_1d,
+    to_device,
+    argsort,
+    to_torch,
+    diag,
 )
 from . import (
     autodiff,  # NOQA
     linalg,  # NOQA
     random,  # NOQA
+    sparse,  # NOQA
 )
 from ._common import (
     _box_binary_scalar,

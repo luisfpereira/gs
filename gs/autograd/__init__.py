@@ -29,6 +29,7 @@ from autograd.numpy import (
     flip,
     float32,
     float64,
+    geomspace,
     greater,
     hsplit,
     hstack,
@@ -56,6 +57,7 @@ from autograd.numpy import (
     shape,
     sort,
     split,
+    square,
     stack,
     std,
     sum,
@@ -127,11 +129,17 @@ from .._shared_numpy import (
     triu_to_vec,
     vec_to_diag,
     vectorize,
+    scatter_sum_1d,
+    to_device,
+    argsort,
+    to_torch,
+    diag,
 )
 from . import (
     autodiff,  # NOQA
     linalg,  # NOQA
     random,  # NOQA
+    sparse,
 )
 from ._common import (
     _box_binary_scalar,
