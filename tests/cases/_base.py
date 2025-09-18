@@ -324,9 +324,8 @@ class DtypeTestCase(TestCase):
             func_name, array_shape, kwargs=kwargs
         )
 
-    def test_unary_op_given_shape(
-        self, func_name, array_shape, kwargs=None, func_array=gs.ones
-    ):
+    def test_unary_op(self, func_name, array, kwargs=None):
+        # TODO: make TestCase robust enough to handle **kwargs
         self._reset_dtype()
 
         kwargs = kwargs or {}
@@ -334,41 +333,23 @@ class DtypeTestCase(TestCase):
 
         for dtype_str in self.dtypes_str:
             dtype = gs.as_dtype(dtype_str)
-            a = func_array(array_shape, dtype=dtype)
+            a = gs.cast(array, dtype=dtype)
 
             out = gs_fnc(a, **kwargs)
             self.assertDtype(out.dtype, dtype)
 
-    def test_unary_op_mult_out_given_shape(
-        self, func_name, array_shape, func_array=gs.ones
-    ):
+    def test_unary_op_mult_out(self, func_name, array):
         self._reset_dtype()
 
         gs_fnc = get_backend_fnc(func_name)
 
         for dtype_str in self.dtypes_str:
             dtype = gs.as_dtype(dtype_str)
-            a = func_array(array_shape, dtype=dtype)
+            a = gs.cast(array, dtype=dtype)
 
             out = gs_fnc(a)
             for out_ in out:
                 self.assertDtype(out_.dtype, dtype)
-
-    def _test_op_given_array(self, func_name, create_array):
-        # create_array to avoid using cast
-        gs_fnc = get_backend_fnc(func_name)
-
-        for dtype_str in self.dtypes_str:
-            dtype = gs.set_default_dtype(dtype_str)
-            args = create_array()
-            if gs.is_array(args):
-                args = [args]
-
-            out = gs_fnc(*args)
-            self.assertDtype(out.dtype, dtype)
-
-    def test_unary_op_given_array(self, func_name, create_array):
-        return self._test_op_given_array(func_name, create_array)
 
     def test_binary_op_float_input(self, func_name, x1, x2):
         gs_fnc = get_backend_fnc(func_name)
@@ -379,9 +360,7 @@ class DtypeTestCase(TestCase):
 
             self.assertDtype(out.dtype, dtype)
 
-    def test_binary_op_given_shape(
-        self, func_name, shape_a, shape_b, kwargs=None, func_a=gs.ones, func_b=gs.ones
-    ):
+    def test_binary_op(self, func_name, array_a, array_b, kwargs=None):
         self._reset_dtype()
 
         kwargs = kwargs or {}
@@ -390,28 +369,19 @@ class DtypeTestCase(TestCase):
         for i, dtype_a_str in enumerate(self.dtypes_str):
             dtype_a = gs.as_dtype(dtype_a_str)
 
-            a = func_a(shape_a, dtype=dtype_a)
+            a = gs.cast(array_a, dtype=dtype_a)
 
             for j, dtype_b_str in enumerate(self.dtypes_str):
                 dtype_b = gs.as_dtype(dtype_b_str)
 
-                b = func_b(shape_b, dtype=dtype_b)
+                b = gs.cast(array_b, dtype=dtype_b)
 
                 out = gs_fnc(a, b, **kwargs)
                 cmp_dtype = dtype_a if i > j else dtype_b
 
                 self.assertDtype(out.dtype, cmp_dtype)
 
-    def test_ternary_op_given_shape(
-        self,
-        func_name,
-        shape_a,
-        shape_b,
-        shape_c,
-        func_a=gs.ones,
-        func_b=gs.ones,
-        func_c=gs.ones,
-    ):
+    def test_ternary_op(self, func_name, array_a, array_b, array_c):
         self._reset_dtype()
 
         gs_fnc = get_backend_fnc(func_name)
@@ -419,24 +389,35 @@ class DtypeTestCase(TestCase):
         for i, dtype_a_str in enumerate(self.dtypes_str):
             dtype_a = gs.as_dtype(dtype_a_str)
 
-            a = func_a(shape_a, dtype=dtype_a)
+            a = gs.cast(array_a, dtype=dtype_a)
 
             for j, dtype_b_str in enumerate(self.dtypes_str):
                 dtype_b = gs.as_dtype(dtype_b_str)
 
-                b = func_b(shape_b, dtype=dtype_b)
+                b = gs.cast(array_b, dtype=dtype_b)
 
                 for k, dtype_c_str in enumerate(self.dtypes_str):
                     dtype_c = gs.as_dtype(dtype_c_str)
-                    c = func_c(shape_c, dtype=dtype_c)
+                    c = gs.cast(array_c, dtype=dtype_c)
 
                     out = gs_fnc(a, b, c)
                     cmp_dtype = gs.as_dtype(self.dtypes_str[max([i, j, k])])
 
                     self.assertDtype(out.dtype, cmp_dtype)
 
-    def test_ternary_op_given_array(self, func_name, create_array):
-        return self._test_op_given_array(func_name, create_array)
+    def test_ternary_op_same_dtype(self, func_name, array_a, array_b, array_c):
+        self._reset_dtype()
+
+        gs_fnc = get_backend_fnc(func_name)
+        for i, dtype_str in enumerate(self.dtypes_str):
+            dtype = gs.as_dtype(dtype_str)
+
+            a = gs.cast(array_a, dtype=dtype)
+            b = gs.cast(array_b, dtype=dtype)
+            c = gs.cast(array_c, dtype=dtype)
+
+            out = gs_fnc(a, b, c)
+            self.assertDtype(out.dtype, dtype)
 
     def test_func_out_dtype(self, func_name, args, kwargs, expected):
         self._reset_dtype()
@@ -446,27 +427,6 @@ class DtypeTestCase(TestCase):
         out = gs_fnc(*args, **kwargs)
 
         self.assertDtype(out.dtype, expected)
-
-    def test_solve_sylvester(
-        self,
-        shape_a,
-        shape_b,
-        shape_c,
-        func_a=gs.ones,
-        func_b=gs.ones,
-        func_c=gs.ones,
-    ):
-        func_name = "linalg.solve_sylvester"
-
-        self.test_ternary_op_given_shape(
-            func_name,
-            shape_a,
-            shape_b,
-            shape_c,
-            func_a=func_a,
-            func_b=func_b,
-            func_c=func_c,
-        )
 
     def test_random_distrib_complex(self, func_name, args=(), kwargs=None):
         self._reset_dtype()
