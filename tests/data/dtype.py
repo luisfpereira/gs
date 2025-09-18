@@ -6,8 +6,6 @@ from geomstats.test.data import TestData
 
 import gs.backend as gs
 
-rand = gs.random.rand
-
 
 class DtypeTestData(TestData):
     def array_test_data(self):
@@ -130,52 +128,46 @@ class DtypeTestData(TestData):
 
         return self.generate_tests(smoke_data)
 
-    def unary_op_given_shape_test_data(self):
-        smoke_data = [
-            dict(func_name="copy", array_shape=(2, 2)),
-            dict(func_name="diagonal", array_shape=(2, 2)),
-            dict(func_name="erf", array_shape=2),
-            dict(func_name="flatten", array_shape=(2, 2)),
-            # TODO: add test in BackendsTestData
-            dict(func_name="get_slice", array_shape=(2, 2), kwargs={"indices": [(0,)]}),
-            dict(func_name="trace", array_shape=(2, 2)),
-            dict(func_name="tril", array_shape=(2, 2)),
-            dict(func_name="tril", array_shape=(2, 2), kwargs={"k": -1}),
-            dict(func_name="triu", array_shape=(2, 2)),
-            dict(func_name="triu", array_shape=(2, 2), kwargs={"k": 1}),
-            dict(func_name="tril_to_vec", array_shape=(2, 2)),
-            dict(func_name="triu_to_vec", array_shape=(2, 2)),
-            dict(func_name="vec_to_diag", array_shape=3),
-            # TODO: add test in BackendsTestData
-            dict(func_name="linalg.norm", array_shape=3),
-        ]
-
-        return self.generate_tests(smoke_data)
-
-    def unary_op_mult_out_given_shape_test_data(self):
-        smoke_data = [dict(func_name="linalg.qr", array_shape=(3, 3))]
-
-        return self.generate_tests(smoke_data)
-
-    def unary_op_given_array_test_data(self):
+    def unary_op_test_data(self):
         def _create_spd():
             return SPDMatrices(2).random_point()
 
         def _create_diag():
-            return Matrices.to_diagonal(rand(2, 2))
+            return Matrices.to_diagonal(gs.random.rand(2, 2))
 
         def _create_sym():
             return SymmetricMatrices(2).random_point()
 
         smoke_data = [
-            dict(func_name="linalg.cholesky", create_array=_create_spd),
-            dict(func_name="linalg.eigvalsh", create_array=_create_sym),
-            dict(func_name="linalg.expm", create_array=_create_diag),
-            dict(func_name="linalg.expm", create_array=_create_spd),
-            dict(func_name="linalg.logm", create_array=_create_diag),
-            dict(func_name="linalg.logm", create_array=_create_spd),
-            dict(func_name="linalg.sqrtm", create_array=_create_spd),
+            dict(func_name="copy", array=gs.ones((2, 2))),
+            dict(func_name="diagonal", array=gs.ones((2, 2))),
+            dict(func_name="erf", array=gs.ones(2)),
+            dict(func_name="flatten", array=gs.ones((2, 2))),
+            dict(
+                func_name="get_slice", array=gs.ones((2, 2)), kwargs={"indices": [(0,)]}
+            ),
+            dict(func_name="trace", array=gs.ones((2, 2))),
+            dict(func_name="tril", array=gs.ones((2, 2))),
+            dict(func_name="tril", array=gs.ones((2, 2)), kwargs={"k": -1}),
+            dict(func_name="triu", array=gs.ones((2, 2))),
+            dict(func_name="triu", array=gs.ones((2, 2)), kwargs={"k": 1}),
+            dict(func_name="tril_to_vec", array=gs.ones((2, 2))),
+            dict(func_name="triu_to_vec", array=gs.ones((2, 2))),
+            dict(func_name="vec_to_diag", array=gs.ones(3)),
+            dict(func_name="linalg.norm", array=gs.ones(3)),
+            dict(func_name="linalg.cholesky", array=_create_spd()),
+            dict(func_name="linalg.eigvalsh", array=_create_sym()),
+            dict(func_name="linalg.expm", array=_create_diag()),
+            dict(func_name="linalg.expm", array=_create_spd()),
+            dict(func_name="linalg.logm", array=_create_diag()),
+            dict(func_name="linalg.logm", array=_create_spd()),
+            dict(func_name="linalg.sqrtm", array=_create_spd()),
         ]
+
+        return self.generate_tests(smoke_data)
+
+    def unary_op_mult_out_test_data(self):
+        smoke_data = [dict(func_name="linalg.qr", array=gs.ones((3, 3)))]
 
         return self.generate_tests(smoke_data)
 
@@ -188,55 +180,61 @@ class DtypeTestData(TestData):
 
         return self.generate_tests(smoke_data)
 
-    def binary_op_given_shape_test_data(self):
+    def binary_op_test_data(self):
         smoke_data = [
-            dict(func_name="cross", shape_a=3, shape_b=3),
-            dict(func_name="divide", shape_a=3, shape_b=3),
+            dict(func_name="cross", array_a=gs.ones(3), array_b=gs.ones(3)),
+            dict(func_name="divide", array_a=gs.ones(3), array_b=gs.ones(3)),
             dict(
                 func_name="divide",
-                shape_a=3,
-                shape_b=3,
-                func_b=gs.zeros,
+                array_a=gs.ones(3),
+                array_b=gs.zeros(3),
                 kwargs={"ignore_div_zero": True},
             ),
-            dict(func_name="dot", shape_a=3, shape_b=3),
-            dict(func_name="dot", shape_a=3, shape_b=(2, 3)),
-            dict(func_name="dot", shape_a=(2, 3), shape_b=(2, 3)),
-            dict(func_name="matmul", shape_a=(2, 2), shape_b=(2, 2)),
-            dict(func_name="matmul", shape_a=(2, 3), shape_b=(3, 2)),
-            dict(func_name="matvec", shape_a=(3, 3), shape_b=3),
-            dict(func_name="matvec", shape_a=(3, 3), shape_b=(2, 3)),
-            dict(func_name="matvec", shape_a=(2, 3, 3), shape_b=(2, 3)),
-            dict(func_name="outer", shape_a=3, shape_b=3),
-            dict(func_name="outer", shape_a=3, shape_b=(2, 3)),
-            dict(func_name="outer", shape_a=(2, 3), shape_b=(2, 3)),
+            dict(func_name="dot", array_a=gs.ones(3), array_b=gs.ones(3)),
+            dict(func_name="dot", array_a=gs.ones(3), array_b=gs.ones((2, 3))),
+            dict(func_name="dot", array_a=gs.ones((2, 3)), array_b=gs.ones((2, 3))),
+            dict(func_name="matmul", array_a=gs.ones((2, 2)), array_b=gs.ones((2, 2))),
+            dict(func_name="matmul", array_a=gs.ones((2, 3)), array_b=gs.ones((3, 2))),
+            dict(func_name="matvec", array_a=gs.ones((3, 3)), array_b=gs.ones(3)),
+            dict(func_name="matvec", array_a=gs.ones((3, 3)), array_b=gs.ones((2, 3))),
+            dict(
+                func_name="matvec", array_a=gs.ones((2, 3, 3)), array_b=gs.ones((2, 3))
+            ),
+            dict(func_name="outer", array_a=gs.ones(3), array_b=gs.ones(3)),
+            dict(func_name="outer", array_a=gs.ones(3), array_b=gs.ones((2, 3))),
+            dict(func_name="outer", array_a=gs.ones((2, 3)), array_b=gs.ones((2, 3))),
         ]
 
         return self.generate_tests(smoke_data)
 
-    def ternary_op_given_shape_test_data(self):
+    def ternary_op_test_data(self):
         smoke_data = [
-            # TODO: add test in BackendsTestData
             dict(
                 func_name="mat_from_diag_triu_tril",
-                shape_a=(2,),
-                shape_b=(1,),
-                shape_c=(1,),
+                array_a=gs.ones(2),
+                array_b=gs.ones(1),
+                array_c=gs.ones(1),
+            ),
+            dict(
+                func_name="linalg.solve_sylvester",
+                array_a=gs.ones((3, 3)),
+                array_b=gs.ones((1, 1)),
+                array_c=gs.ones((3, 1)),
             ),
         ]
         return self.generate_tests(smoke_data)
 
-    def ternary_op_given_array_test_data(self):
-        def _create_sylvester():
-            a = SPDMatrices(3).random_point()
-            b = a
-            q = rand(3, 3)
-            return a, b, q
+    def ternary_op_same_dtype_test_data(self):
+        spd_mat = SPDMatrices(3).random_point()
 
         smoke_data = [
-            dict(func_name="linalg.solve_sylvester", create_array=_create_sylvester)
+            dict(
+                func_name="linalg.solve_sylvester",
+                array_a=spd_mat,
+                array_b=spd_mat,
+                array_c=gs.random.rand(3, 3),
+            ),
         ]
-
         return self.generate_tests(smoke_data)
 
     def func_out_dtype_test_data(self):
@@ -247,17 +245,6 @@ class DtypeTestData(TestData):
                 args=([True, False], 20.0, 20.0),
                 kwargs={},
                 expected=gs.float64,
-            ),
-        ]
-
-        return self.generate_tests(smoke_data)
-
-    def solve_sylvester_test_data(self):
-        smoke_data = [
-            dict(
-                shape_a=(3, 3),
-                shape_b=(1, 1),
-                shape_c=(3, 1),
             ),
         ]
 
