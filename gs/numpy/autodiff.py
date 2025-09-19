@@ -4,7 +4,7 @@ NumPy backend does not offer automatic differentiation.
 The following functions return error messages.
 """
 
-from gs._exceptions import AutodiffNotImplementedError
+from .._exceptions import AutodiffNotImplementedError
 
 _USE_OTHER_BACKEND_MSG = (
     "Automatic differentiation is not supported with numpy backend. "

@@ -1,4 +1,4 @@
-from .._shared_numpy.sparse import (
+from ..numpy.sparse import (
     coo_matrix,
     csc_matrix,
     csr_matrix,

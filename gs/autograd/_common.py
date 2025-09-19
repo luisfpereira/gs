@@ -7,7 +7,7 @@ from gs._dtype_utils import (
     get_default_dtype,
 )
 
-from .._shared_numpy._common import (
+from ..numpy._common import (
     _add_default_dtype_by_casting,
     _allow_complex_dtype,
     _box_binary_scalar,
@@ -18,6 +18,7 @@ from .._shared_numpy._common import (
     _get_wider_dtype,
     _is_boolean,
     _is_iterable,
+    array,
     as_dtype,
     atol,
     cast,
@@ -29,8 +30,7 @@ from .._shared_numpy._common import (
     rtol,
     set_default_dtype,
     to_ndarray,
+    zeros,
 )
 
-zeros = _dyn_update_dtype(target=_np.zeros)
 eye = _dyn_update_dtype(target=_np.eye)
-array = _cast_out_from_dtype(target=_np.array)

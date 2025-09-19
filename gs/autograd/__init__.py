@@ -74,15 +74,9 @@ from autograd.numpy import (
     where,
     zeros_like,
 )
-
-try:
-    from autograd.numpy import trapezoid
-except ImportError:
-    from autograd.numpy import trapz as trapezoid
-
 from autograd.scipy.special import erf, gamma, polygamma  # NOQA
 
-from .._shared_numpy import (
+from ..numpy import (
     abs,
     angle,
     arange,
@@ -91,19 +85,23 @@ from .._shared_numpy import (
     arcsin,
     arctan2,
     arctanh,
+    argsort,
     array_from_sparse,
     assignment,
     assignment_by_sum,
     ceil,
     cos,
     cosh,
+    diag,
     divide,
     dot,
+    empty,
     exp,
     flatten,
     floor,
     from_numpy,
     get_slice,
+    linspace,
     log,
     mat_from_diag_triu_tril,
     matmul,
@@ -115,6 +113,7 @@ from .._shared_numpy import (
     ravel_tril_indices,
     real,
     scatter_add,
+    scatter_sum_1d,
     set_diag,
     sign,
     sin,
@@ -123,22 +122,19 @@ from .._shared_numpy import (
     squeeze,
     tan,
     tanh,
+    to_device,
     to_numpy,
+    to_torch,
     trace,
     tril_to_vec,
     triu_to_vec,
     vec_to_diag,
     vectorize,
-    scatter_sum_1d,
-    to_device,
-    argsort,
-    to_torch,
-    diag,
 )
 from . import (
-    autodiff,  # NOQA
-    linalg,  # NOQA
-    random,  # NOQA
+    autodiff,
+    linalg,
+    random,
     sparse,
 )
 from ._common import (
@@ -163,9 +159,12 @@ from ._common import (
     zeros,
 )
 
+try:
+    from autograd.numpy import trapezoid
+except ImportError:
+    from autograd.numpy import trapz as trapezoid
+
 ones = _dyn_update_dtype(target=_np.ones)
-linspace = _dyn_update_dtype(target=_np.linspace)
-empty = _dyn_update_dtype(target=_np.empty)
 
 
 def has_autodiff():
