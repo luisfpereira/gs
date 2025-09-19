@@ -1,6 +1,6 @@
 import sys
 
-from gs import BACKEND_NAME
+from gsops import BACKEND_NAME
 
 if BACKEND_NAME == "autograd":
     from autograd import numpy, scipy

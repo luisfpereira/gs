@@ -6,7 +6,7 @@ import scipy
 from geomstats.test.test_case import TestCase
 from geomstats.test.vectorization import generate_vectorization_data
 
-import gs.backend as gs
+import gsops.backend as gs
 
 # TODO: use new strategy for vectorization tests
 

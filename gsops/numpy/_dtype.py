@@ -1,6 +1,6 @@
 import functools
 
-import gs._backend_config as _config
+import gsops._backend_config as _config
 
 from .._dtype_utils import (
     _dyn_update_dtype,  # noqa: F401

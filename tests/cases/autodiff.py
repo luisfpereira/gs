@@ -2,8 +2,8 @@ import pytest
 from geomstats.test.test_case import TestCase
 from geomstats.test.vectorization import generate_vectorization_data
 
-import gs.backend as gs
-from gs._exceptions import AutodiffNotImplementedError
+import gsops.backend as gs
+from gsops._exceptions import AutodiffNotImplementedError
 
 
 class NumpyRaisesTestCase(TestCase):

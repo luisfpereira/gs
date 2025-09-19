@@ -2,7 +2,7 @@ import functools
 
 import torch as _torch
 
-import gs._backend_config as _config
+import gsops._backend_config as _config
 
 from .._dtype_utils import (
     _MAP_FLOAT_TO_COMPLEX,

@@ -4,7 +4,7 @@ from geomstats.geometry.special_orthogonal import SpecialOrthogonal
 from geomstats.geometry.symmetric_matrices import SymmetricMatrices
 from geomstats.test.data import TestData
 
-import gs.backend as gs
+import gsops.backend as gs
 
 rand = gs.random.rand
 

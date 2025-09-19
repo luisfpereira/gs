@@ -9,13 +9,18 @@ import os
 import sys
 import types
 
-import gs._common as common
+import gsops._common as common
 
 __version__ = "0.1.0"
 
 
 def get_backend_name():
-    return os.environ.get("GEOMSTATS_BACKEND", "numpy")
+    # for backward compatibility
+    name = os.environ.get("GEOMSTATS_BACKEND")
+    if name is None:
+        name = os.environ.get("GSOPS_BACKEND", "numpy")
+
+    return name
 
 
 BACKEND_NAME = get_backend_name()
@@ -250,7 +255,7 @@ class BackendImporter:
     @staticmethod
     def _import_backend(backend_name):
         try:
-            return importlib.import_module(f"gs.{backend_name}")
+            return importlib.import_module(f"gsops.{backend_name}")
         except ModuleNotFoundError:
             raise RuntimeError(f"Unknown backend '{backend_name}'")
 
@@ -309,13 +314,13 @@ class BackendImporter:
             return sys.modules[fullname]
 
         module = self._create_backend_module(BACKEND_NAME)
-        module.__name__ = f"gs.{BACKEND_NAME}"
+        module.__name__ = f"gsops.{BACKEND_NAME}"
         module.__loader__ = self
         sys.modules[fullname] = module
 
         module.set_default_dtype("float64")
 
-        logging.debug(f"geomstats is using {BACKEND_NAME} backend")
+        logging.debug(f"gsops is using {BACKEND_NAME} backend")
         return module
 
     def find_spec(self, fullname, path=None, target=None):
@@ -323,4 +328,4 @@ class BackendImporter:
         return self.find_module(fullname, path=path)
 
 
-sys.meta_path.append(BackendImporter("gs.backend"))
+sys.meta_path.append(BackendImporter("gsops.backend"))

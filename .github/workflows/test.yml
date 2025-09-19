@@ -49,7 +49,7 @@ jobs:
 
       - name: unit testing for backend [pytest]
         run: |
-          pytest --cov-report term --cov=gs ${{matrix.test-folder}}
+          pytest --cov-report term --cov=gsops ${{matrix.test-folder}}
 
       - name: uploading code coverage [codecov]
         uses: codecov/codecov-action@v5

@@ -14,7 +14,7 @@ import functools
 import inspect
 import types
 
-import gs._backend_config as _config
+import gsops._backend_config as _config
 
 _TO_UPDATE_FUNCS_DTYPE = []
 _TO_UPDATE_FUNCS_KW_DTYPE = []
@@ -116,6 +116,8 @@ def get_default_dtype():
 def get_default_cdtype():
     """Get backend default complex dtype."""
     return _config.DEFAULT_COMPLEX_DTYPE
+
+
 def _dyn_update_dtype(dtype_pos=None, target=None):
     """Update (dynamically) function dtype.
 

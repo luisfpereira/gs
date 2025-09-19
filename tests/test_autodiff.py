@@ -8,7 +8,7 @@ from geomstats.geometry.special_euclidean import SpecialEuclidean
 from geomstats.test.parametrizers import DataBasedParametrizer
 from geomstats.test.test_case import TestCase, autograd_and_torch_only, np_only
 
-import gs.backend as gs
+import gsops.backend as gs
 
 from .cases.autodiff import (
     AutodiffTestCase,
