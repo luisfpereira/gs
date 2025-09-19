@@ -1,4 +1,4 @@
-from ..numpy.sparse import (
+from ..numpy.sparse import (  # noqa: F401
     coo_matrix,
     csc_matrix,
     csr_matrix,

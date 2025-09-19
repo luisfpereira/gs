@@ -70,7 +70,6 @@ known-first-party = ["gs"]
 convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
-"*/__init__.py" = ["F401", "D104"]
-"gs/**/*" = ["D", "F401"]
+"*/__init__.py" = ["D104"]
+"gs/**/*" = ["D"]
 "tests/*" = ["D"]
-"tests/conftest.py" = ["F401"]

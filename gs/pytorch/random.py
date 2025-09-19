@@ -1,7 +1,7 @@
 """Torch based random backend."""
 
 import torch as _torch
-from torch import rand, randint
+from torch import rand, randint  # noqa: F401
 from torch.distributions.multivariate_normal import (
     MultivariateNormal as _MultivariateNormal,
 )

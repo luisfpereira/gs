@@ -3,7 +3,7 @@
 import numpy as _np
 import scipy as _scipy
 import torch as _torch
-from torch.linalg import (
+from torch.linalg import (  # noqa: F401
     cholesky,
     det,
     eig,
@@ -14,9 +14,9 @@ from torch.linalg import (
     qr,
     solve,
 )
-from torch.linalg import matrix_exp as expm
+from torch.linalg import matrix_exp as expm  # noqa: F401
 
-from .._backend_config import np_atol as atol
+from .._backend_config import np_atol as _np_atol
 from ..numpy import linalg as _gsnplinalg
 from ._dtype import _cast_out_to_input_dtype
 
@@ -125,7 +125,7 @@ def is_single_matrix_pd(mat):
         return False
     if mat.dtype in [_torch.complex64, _torch.complex128]:
         is_hermitian = _torch.all(
-            _torch.abs(mat - _torch.conj(_torch.transpose(mat, 0, 1))) < atol
+            _torch.abs(mat - _torch.conj(_torch.transpose(mat, 0, 1))) < _np_atol
         )
         if not is_hermitian:
             return False

@@ -116,8 +116,6 @@ def get_default_dtype():
 def get_default_cdtype():
     """Get backend default complex dtype."""
     return _config.DEFAULT_COMPLEX_DTYPE
-
-
 def _dyn_update_dtype(dtype_pos=None, target=None):
     """Update (dynamically) function dtype.
 
@@ -167,7 +165,7 @@ def _pre_set_default_dtype(as_dtype):
 
         _update_default_dtypes()
 
-        return get_default_dtype()
+        return _config.DEFAULT_DTYPE
 
     return set_default_dtype
 
@@ -370,51 +368,3 @@ def _pre_allow_complex_dtype(cast, complex_dtypes):
         return _decorator(target)
 
     return _allow_complex_dtype
-
-
-def _np_box_unary_scalar(target=None):
-    """Update dtype if input is float in unary operations.
-
-    How it works?
-    -------------
-    If dtype is float, then default dtype is passed as argument.
-    """
-
-    def _decorator(func):
-        @functools.wraps(func)
-        def _wrapped(x, *args, **kwargs):
-            if isinstance(x, float):
-                return func(x, *args, dtype=_config.DEFAULT_DTYPE, **kwargs)
-
-            return func(x, *args, **kwargs)
-
-        return _wrapped
-
-    if target is None:
-        return _decorator
-
-    return _decorator(target)
-
-
-def _np_box_binary_scalar(target=None):
-    """Update dtype if input is float in binary operations.
-
-    How it works?
-    -------------
-    If dtype is float, then default dtype is passed as argument.
-    """
-
-    def _decorator(func):
-        @functools.wraps(func)
-        def _wrapped(x1, x2, *args, **kwargs):
-            if isinstance(x1, float):
-                return func(x1, x2, *args, dtype=_config.DEFAULT_DTYPE, **kwargs)
-
-            return func(x1, x2, *args, **kwargs)
-
-        return _wrapped
-
-    if target is None:
-        return _decorator
-
-    return _decorator(target)

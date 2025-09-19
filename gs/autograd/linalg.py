@@ -5,7 +5,7 @@ import functools as _functools
 import autograd.numpy as _np
 from autograd.extend import defvjp as _defvjp
 from autograd.extend import primitive as _primitive
-from autograd.numpy.linalg import (
+from autograd.numpy.linalg import (  # noqa: F401
     cholesky,
     det,
     eig,
@@ -19,7 +19,7 @@ from autograd.numpy.linalg import (
 )
 from autograd.scipy.linalg import expm
 
-from ..numpy.linalg import (
+from ..numpy.linalg import (  # noqa: F401
     fractional_matrix_power,
     is_single_matrix_pd,
     polar,
@@ -39,6 +39,7 @@ def _adjoint(_ans, x, fn):
     def vjp(g):
         n = x.shape[-1]
         size_m = x.shape[:-2] + (2 * n, 2 * n)
+        # TODO: fix dtype here?
         mat = _np.zeros(size_m)
         mat[..., :n, :n] = x.transpose(axes)
         mat[..., n:, n:] = x.transpose(axes)

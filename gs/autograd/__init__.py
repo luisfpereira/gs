@@ -1,7 +1,7 @@
 """Autograd based computation backend."""
 
 import autograd.numpy as _np
-from autograd.numpy import (
+from autograd.numpy import (  # noqa: F401
     all,
     allclose,
     amax,
@@ -74,9 +74,9 @@ from autograd.numpy import (
     where,
     zeros_like,
 )
-from autograd.scipy.special import erf, gamma, polygamma  # NOQA
+from autograd.scipy.special import erf, gamma, polygamma  # noqa: F401
 
-from ..numpy import (
+from ..numpy import (  # noqa: F401
     abs,
     angle,
     arange,
@@ -86,10 +86,15 @@ from ..numpy import (
     arctan2,
     arctanh,
     argsort,
+    array,
     array_from_sparse,
+    as_dtype,
     assignment,
     assignment_by_sum,
+    atol,
+    cast,
     ceil,
+    convert_to_wider_dtype,
     cos,
     cosh,
     diag,
@@ -100,7 +105,13 @@ from ..numpy import (
     flatten,
     floor,
     from_numpy,
+    get_default_cdtype,
+    get_default_dtype,
     get_slice,
+    is_array,
+    is_bool,
+    is_complex,
+    is_floating,
     linspace,
     log,
     mat_from_diag_triu_tril,
@@ -112,8 +123,10 @@ from ..numpy import (
     power,
     ravel_tril_indices,
     real,
+    rtol,
     scatter_add,
     scatter_sum_1d,
+    set_default_dtype,
     set_diag,
     sign,
     sin,
@@ -123,6 +136,7 @@ from ..numpy import (
     tan,
     tanh,
     to_device,
+    to_ndarray,
     to_numpy,
     to_torch,
     trace,
@@ -130,41 +144,23 @@ from ..numpy import (
     triu_to_vec,
     vec_to_diag,
     vectorize,
+    zeros,
 )
-from . import (
+from ..numpy._dtype import _dyn_update_dtype
+from . import (  # noqa: F401
     autodiff,
     linalg,
     random,
     sparse,
 )
-from ._common import (
-    _box_binary_scalar,
-    _box_unary_scalar,
-    _dyn_update_dtype,
-    array,
-    as_dtype,
-    atol,
-    cast,
-    convert_to_wider_dtype,
-    eye,
-    get_default_cdtype,
-    get_default_dtype,
-    is_array,
-    is_bool,
-    is_complex,
-    is_floating,
-    rtol,
-    set_default_dtype,
-    to_ndarray,
-    zeros,
-)
 
 try:
     from autograd.numpy import trapezoid
 except ImportError:
-    from autograd.numpy import trapz as trapezoid
+    from autograd.numpy import trapz as trapezoid  # noqa: F401
 
 ones = _dyn_update_dtype(target=_np.ones)
+eye = _dyn_update_dtype(target=_np.eye)
 
 
 def has_autodiff():

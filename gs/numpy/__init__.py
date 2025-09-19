@@ -5,41 +5,18 @@ try:
 except ImportError:
     pass
 
-from . import (
+from .._backend_config import np_atol as atol  # noqa: F401
+from .._backend_config import np_rtol as rtol  # noqa: F401
+from . import (  # noqa: F401
     autodiff,
     linalg,
     random,
     sparse,
 )
-from ._dispatch import BACKEND_NAME, _common
+from ._dispatch import BACKEND_NAME
 from ._dispatch import numpy as _np
 from ._dispatch import scipy as _scipy
-from ._dispatch._common import (
-    _box_binary_scalar,
-    _box_unary_scalar,
-    _dyn_update_dtype,
-    _get_wider_dtype,
-    _is_boolean,
-    _is_iterable,
-    _modify_func_default_dtype,
-    array,
-    as_dtype,
-    atol,
-    cast,
-    convert_to_wider_dtype,
-    eye,
-    get_default_cdtype,
-    get_default_dtype,
-    is_array,
-    is_bool,
-    is_complex,
-    is_floating,
-    rtol,
-    set_default_dtype,
-    to_ndarray,
-    zeros,
-)
-from ._dispatch.numpy import (
+from ._dispatch.numpy import (  # noqa: F401
     all,
     allclose,
     amax,
@@ -112,20 +89,43 @@ from ._dispatch.numpy import (
     where,
     zeros_like,
 )
-from ._dispatch.scipy.special import erf, gamma, polygamma
+from ._dispatch.scipy.special import (  # noqa: F401
+    erf,
+    gamma,
+    polygamma,
+)
+from ._dtype import (  # noqa: F401
+    _box_binary_scalar,
+    _box_unary_scalar,
+    _cast_out_from_dtype,
+    _dyn_update_dtype,
+    _get_wider_dtype,
+    _modify_func_default_dtype,
+    as_dtype,
+    cast,
+    convert_to_wider_dtype,
+    get_default_cdtype,
+    get_default_dtype,
+    is_bool,
+    is_complex,
+    is_floating,
+    set_default_dtype,
+)
 
 try:
     from ._dispatch.numpy import trapezoid
 except ImportError:
-    from ._dispatch.numpy import trapz as trapezoid
+    from ._dispatch.numpy import trapz as trapezoid  # noqa: F401
 
 
 if BACKEND_NAME != "autograd":
     ones = _modify_func_default_dtype(target=_np.ones)
+    eye = _modify_func_default_dtype(target=_np.eye)
 
 linspace = _dyn_update_dtype(target=_np.linspace, dtype_pos=5)
 empty = _dyn_update_dtype(target=_np.empty, dtype_pos=1)
-
+array = _cast_out_from_dtype(target=_np.array, dtype_pos=1)
+zeros = _dyn_update_dtype(target=_np.zeros, dtype_pos=1)
 
 abs = _box_unary_scalar(target=_np.abs)
 arccos = _box_unary_scalar(target=_np.arccos)
@@ -148,6 +148,40 @@ tanh = _box_unary_scalar(target=_np.tanh)
 arctan2 = _box_binary_scalar(target=_np.arctan2)
 mod = _box_binary_scalar(target=_np.mod)
 power = _box_binary_scalar(target=_np.power)
+
+
+def _is_boolean(x):
+    if isinstance(x, bool):
+        return True
+    if isinstance(x, (tuple, list)):
+        return _is_boolean(x[0])
+    if isinstance(x, _np.ndarray):
+        return x.dtype == bool
+    return False
+
+
+def _is_iterable(x):
+    if isinstance(x, (list, tuple)):
+        return True
+    if isinstance(x, _np.ndarray):
+        return x.ndim > 0
+    return False
+
+
+def is_array(x):
+    return type(x) is _np.ndarray
+
+
+def to_ndarray(x, to_ndim, axis=0, dtype=None):
+    x = _np.asarray(x, dtype=dtype)
+
+    if x.ndim > to_ndim:
+        raise ValueError("The ndim cannot be adapted properly.")
+
+    while x.ndim < to_ndim:
+        x = _np.expand_dims(x, axis=axis)
+
+    return x
 
 
 def angle(z, deg=False):
@@ -404,7 +438,7 @@ def array_from_sparse(indices, data, target_shape):
 def vec_to_diag(vec):
     """Convert vector to diagonal matrix."""
     d = vec.shape[-1]
-    return _np.squeeze(vec[..., None, :] * eye(d, dtype=vec.dtype)[None, :, :])
+    return _np.squeeze(vec[..., None, :] * _np.eye(d, dtype=vec.dtype)[None, :, :])
 
 
 def tril_to_vec(x, k=0):

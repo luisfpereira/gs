@@ -1,30 +1,29 @@
 import functools
 
 import torch as _torch
-from torch import complex64, complex128, float32, float64
 
 import gs._backend_config as _config
-from gs._dtype_utils import (
+
+from .._dtype_utils import (
     _MAP_FLOAT_TO_COMPLEX,
-    _modify_func_default_dtype,
+    _modify_func_default_dtype,  # noqa: F401
     _pre_add_default_dtype_by_casting,
     _pre_allow_complex_dtype,
     _pre_cast_out_to_input_dtype,
     _update_default_dtypes,
-    get_default_cdtype,
-    get_default_dtype,
+    get_default_cdtype,  # noqa: F401
+    get_default_dtype,  # noqa: F401
 )
-
-from ._common import cast
+from ._common import array
 
 MAP_DTYPE = {
-    "float32": float32,
-    "float64": float64,
-    "complex64": complex64,
-    "complex128": complex128,
+    "float32": _torch.float32,
+    "float64": _torch.float64,
+    "complex64": _torch.complex64,
+    "complex128": _torch.complex128,
 }
 
-_COMPLEX_DTYPES = (complex64, complex128)
+_COMPLEX_DTYPES = (_torch.complex64, _torch.complex128)
 
 
 def is_floating(x):
@@ -42,6 +41,12 @@ def is_bool(x):
 def as_dtype(value):
     """Transform string representing dtype in dtype."""
     return MAP_DTYPE[value]
+
+
+def cast(x, dtype):
+    if _torch.is_tensor(x):
+        return x.to(dtype=dtype)
+    return array(x, dtype=dtype)
 
 
 def _dtype_as_str(dtype):

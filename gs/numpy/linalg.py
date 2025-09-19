@@ -1,13 +1,9 @@
 """Numpy based linear algebra backend."""
 
+from .._backend_config import np_atol as _atol
 from ._dispatch import numpy as _np
 from ._dispatch import scipy as _scipy
-from ._dispatch._common import (
-    _cast_fout_to_input_dtype,
-    _cast_out_to_input_dtype,
-    atol,
-)
-from ._dispatch.numpy.linalg import (
+from ._dispatch.numpy.linalg import (  # noqa: F401
     cholesky,
     det,
     eig,
@@ -19,7 +15,11 @@ from ._dispatch.numpy.linalg import (
     norm,
     svd,
 )
-from ._dispatch.scipy.linalg import expm
+from ._dispatch.scipy.linalg import expm  # noqa: F401
+from ._dtype import (
+    _cast_fout_to_input_dtype,
+    _cast_out_to_input_dtype,
+)
 
 
 def _transpose(array):
@@ -28,11 +28,11 @@ def _transpose(array):
     return _np.transpose(array, axes=axes)
 
 
-def _is_symmetric(x, tol=atol):
+def _is_symmetric(x, tol=_atol):
     return (_np.abs(x - _transpose(x)) < tol).all()
 
 
-def _is_hermitian(x, tol=atol):
+def _is_hermitian(x, tol=_atol):
     return (_np.abs(x - _np.conj(_transpose(x))) < tol).all()
 
 
@@ -60,7 +60,7 @@ def logm(x):
     return result
 
 
-def solve_sylvester(a, b, q, tol=atol):
+def solve_sylvester(a, b, q, tol=_atol):
     if a.shape == b.shape:
         if _np.all(_np.isclose(a, b)) and _np.all(_np.abs(a - _transpose(a)) < tol):
             eigvals, eigvecs = _np.linalg.eigh(a)

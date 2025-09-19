@@ -4,7 +4,7 @@ from collections.abc import Iterable as _Iterable
 
 import numpy as _np
 import torch as _torch
-from torch import (
+from torch import (  # noqa: F401
     arange,
     argmin,
     asarray,
@@ -46,7 +46,7 @@ from torch import (
     zeros_like,
 )
 from torch import broadcast_tensors as broadcast_arrays
-from torch import repeat_interleave as repeat
+from torch import repeat_interleave as repeat  # noqa: F401
 from torch.special import gammaln as _gammaln
 
 from .._backend_config import pytorch_atol as atol
@@ -57,13 +57,14 @@ from . import (
     random,  # NOQA
     sparse,  # NOQA
 )
-from ._common import array, cast, from_numpy
-from ._dtype import (
+from ._common import array, from_numpy  # noqa: F401
+from ._dtype import (  # noqa: F401
     _add_default_dtype_by_casting,
     _box_binary_scalar,
     _box_unary_scalar,
     _preserve_input_dtype,
     as_dtype,
+    cast,
     get_default_cdtype,
     get_default_dtype,
     is_bool,

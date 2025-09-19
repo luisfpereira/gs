@@ -1,6 +1,6 @@
 import math as _math
 
-from numpy import pi
+from numpy import pi  # noqa: F401
 
 
 def comb(n, k):
